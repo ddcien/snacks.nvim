@@ -68,6 +68,7 @@ end
 ---@param client vim.lsp.Client
 function M.add_loc(item, result, client)
   ---@type snacks.picker.lsp.Loc
+  local bufmap = M.bufmap()
   local loc = {
     uri = result.uri or result.targetUri,
     range = result.range or result.targetSelectionRange,
@@ -77,6 +78,7 @@ function M.add_loc(item, result, client)
   item.pos = { loc.range.start.line + 1, loc.range.start.character }
   item.end_pos = { loc.range["end"].line + 1, loc.range["end"].character }
   item.file = vim.uri_to_fname(loc.uri)
+  item.buf = bufmap[item.file]
   return item
 end
 
@@ -354,7 +356,7 @@ function M.results_to_items(client, results, opts)
       kind = M.symbol_kind(result.kind),
       parent = parent,
       detail = result.detail,
-      name = result.name,
+      name = result.detail or result.name,
       text = "",
       range = result.range or result.selectionRange,
       item = result,
